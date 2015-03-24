@@ -27,7 +27,7 @@ func init() {
 	}
 }
 
-func TestLoad(t *testing.T) {
+func TestNew(t *testing.T) {
 	s, err := New(dirname)
 	if err != nil {
 		t.Errorf("unexpected error from New() on fixtures directory")
