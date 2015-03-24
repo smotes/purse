@@ -28,9 +28,9 @@ func init() {
 }
 
 func TestLoad(t *testing.T) {
-	s, err := Load(dirname)
+	s, err := New(dirname)
 	if err != nil {
-		t.Errorf("unexpected error from Load() on fixtures directory")
+		t.Errorf("unexpected error from New() on fixtures directory")
 	}
 
 	if len(fixtures) != len(s.files) {
@@ -55,22 +55,22 @@ func TestLoad(t *testing.T) {
 	}
 
 	// try to load file instead of directory
-	_, err = Load(filepath.Join(".", "purse.go"))
+	_, err = New(filepath.Join(".", "purse.go"))
 	if err == nil {
 		t.Errorf("expected error trying to load from non-directory")
 	}
 
 	// try to load directory that does not exist
-	_, err = Load(filepath.Join(".", "foo"))
+	_, err = New(filepath.Join(".", "foo"))
 	if err == nil {
 		t.Errorf("expected error trying to load directory that does not exist")
 	}
 }
 
 func TestGet(t *testing.T) {
-	s, err := Load(dirname)
+	s, err := New(dirname)
 	if err != nil {
-		t.Errorf("unexpected error from Load() on fixtures directory")
+		t.Errorf("unexpected error from New() on fixtures directory")
 	}
 
 	for key, val := range fixtures {
