@@ -2,7 +2,7 @@
 
 purse is a persistence-layer Go package for loading SQL file contents for use in Go programs.
 
-**Disclaimer**: *purse is not a query builder or ORM package, but rather a way to organize and load SQL files*.
+**Disclaimer**: *purse is not a query builder or ORM package, but rather a package used to organize and load SQL files*.
 
 ### Rationale
 
@@ -39,11 +39,11 @@ SELECT id, slug, title, created, markdown, html
 FROM post
 ```
 
-Load the `./sql` directory using `purse.Load()` to have access to the file's contents.
+Load the `./sql` directory using `purse.New()` to have access to the file's contents.
 
 ```go
 // Load all SQL files from specified directory into a map
-ps, err := purse.Load(filepath.Join(".", "sql"))
+ps, err := purse.New(filepath.Join(".", "sql"))
 
 // Get a file's contents
 contents, ok := ps.Get("query_all.sql")
