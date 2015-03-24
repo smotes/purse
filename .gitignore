@@ -1,0 +1,8 @@
+# golang
+*.exe
+coverage.out
+example.go
+
+# jetbrains
+.idea
+*.iml
