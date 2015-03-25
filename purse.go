@@ -14,7 +14,7 @@ const (
 // Purse is a key/value collection of loaded SQL files by name : content.
 // It is safe for concurrent use by multiple goroutines.
 type Purse struct {
-	mux   sync.RWMutex
+	mu    sync.RWMutex
 	files map[string]string
 }
 
