@@ -57,8 +57,8 @@ func New(dir string) (*Purse, error) {
 
 // Get returns a loaded file's contents and existence of the file by filename.
 func (p *Purse) Get(filename string) (v string, ok bool) {
-	p.mux.RLock()
+	p.mu.RLock()
 	v, ok = p.files[filename]
-	p.mux.RUnlock()
+	p.mu.RUnlock()
 	return
 }
