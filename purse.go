@@ -59,6 +59,6 @@ func New(dir string) (*Purse, error) {
 func (p *Purse) Get(filename string) (v string, ok bool) {
 	p.mux.RLock()
 	v, ok = p.files[filename]
-	p.mux.Unlock()
+	p.mux.RUnlock()
 	return
 }
