@@ -4,14 +4,17 @@ import (
 	"io/ioutil"
 	"os"
 	"path/filepath"
+	"sync"
 )
 
 const (
-	ext = ".sql"
+	ext string = ".sql"
 )
 
 // Purse is a key/value collection of loaded SQL files by name : content.
+// It is safe for concurrent use by multiple goroutines.
 type Purse struct {
+	mux   sync.RWMutex
 	files map[string]string
 }
 
@@ -54,6 +57,8 @@ func New(dir string) (*Purse, error) {
 
 // Get returns a loaded file's contents and existence of the file by filename.
 func (p *Purse) Get(filename string) (v string, ok bool) {
+	p.mux.RLock()
 	v, ok = p.files[filename]
+	p.mux.Unlock()
 	return
 }
