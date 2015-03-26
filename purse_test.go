@@ -37,13 +37,10 @@ func TestNew(t *testing.T) {
 		t.Errorf("invalid number of loaded SQL files")
 	}
 
-	for key, val := range fixtures {
-		v, ok := s.files[key]
+	for key, _ := range fixtures {
+		_, ok := s.files[key]
 		if !ok {
 			t.Errorf("unable to find loaded file %s in file map", key)
-		}
-		if v != val {
-			t.Errorf("invalid %s file content:\n%v\n%v", key, []byte(v), []byte(val))
 		}
 	}
 
@@ -81,5 +78,14 @@ func TestGet(t *testing.T) {
 		if v != val {
 			t.Errorf("invalid %s file content:\n%v\n%v", key, []byte(v), []byte(val))
 		}
+	}
+}
+
+func BenchmarkGet(b *testing.B) {
+	s, _ := New(dirname)
+	var key string = "query_by_slug.sql"
+
+	for i := 0; i < b.N; i++ {
+		s.Get(key)
 	}
 }
