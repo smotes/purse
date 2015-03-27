@@ -12,6 +12,10 @@ import (
 	"github.com/smotes/purse"
 )
 
+const (
+	envar = "GOPACKAGE"
+)
+
 var (
 	in, out, file, name, pack string
 )
@@ -21,15 +25,18 @@ func init() {
 	flag.StringVar(&out, "out", "", "directory of the output source file")
 	flag.StringVar(&file, "file", "out.go", "name of the output source file")
 	flag.StringVar(&name, "name", "gen", "variable name of the generated Purse struct")
+	flag.StringVar(&pack, "pack", "", "name of the go package for the generated source file")
 	flag.Parse()
 }
 
 func main() {
 	validate(in, errors.New("must provide directory of input SQL file(s)"))
 	validate(out, errors.New("must provide directory of output source file"))
-	pack = os.Getenv("GOPACKAGE")
+	pack = os.Getenv(envar)
 	if pack == "" {
-		handle(errors.New("invoke purse with go generate"))
+		validate(pack, errors.New("must provide the name of the go package for the generated source file"))
+	} else {
+		os.Setenv(envar, pack)
 	}
 
 	mp, err := purse.New(in)
