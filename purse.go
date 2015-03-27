@@ -23,7 +23,7 @@
 //
 // The command syntax is:
 //
-//		$ purse -in="input/dir" -out="output/dir" [-file="out.go"] [-name="gen"]
+//		$ purse -in="input/dir" -out="output/dir" [-file="out.go"] [-name="gen"] [-pack="main"]
 //
 // The input directory and output directory paths must either be absolute or relative to the
 // package using it via go generate, or relative to the current working directory where the
@@ -32,6 +32,8 @@
 // To override the default output source file name (out.go), provide the optional -file flag.
 //
 // To override the default variable name (gen) of the generated Purse, provide the optional -name flag.
+//
+// To set or override the `$GOPACKAGE` environment variable, provide the optional `-pack` flag.
 //
 // This process should generally be handled using go generate. Add a comment in one of your go source files,
 // like so:
@@ -42,12 +44,10 @@
 //
 //  	$ go generate
 //
-// Note that purse depends on certain environment variables to be set to execute properly, namely the
-// $GOPACKAGE variable set automatically when running the go generate command. If you wish to explicitly
-// use this tool without go generate, you will have to set the output source file's package name by
-// setting this environment variable.
+// Note that the `-pack` flag is not necessary when using go generate, as it sets the environment variable
+// automatically. Refer to the [documentation](https://golang.org/cmd/go/) on the `go` command for more information.
 //
-package purse
+package purse // import "github.com/smotes/purse"
 
 import (
 	"io/ioutil"
