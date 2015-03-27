@@ -106,6 +106,7 @@ func New(dir string) (*MemoryPurse, error) {
 				return nil, err
 			}
 			p.files[fi.Name()] = string(b)
+			f.Close()
 		}
 	}
 	return p, nil
