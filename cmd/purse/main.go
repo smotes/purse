@@ -7,6 +7,7 @@ import (
 	"os"
 	"path/filepath"
 	"strconv"
+	"strings"
 	"text/template"
 
 	"github.com/smotes/purse"
@@ -22,7 +23,7 @@ var (
 
 func init() {
 	flag.StringVar(&in, "in", "", "directory of the input SQL file(s)")
-	flag.StringVar(&out, "out", "", "directory of the output source file")
+	flag.StringVar(&out, "out", "./", "directory of the output source file")
 	flag.StringVar(&file, "file", "out.go", "name of the output source file")
 	flag.StringVar(&name, "name", "gen", "variable name of the generated Purse struct")
 	flag.StringVar(&pack, "pack", "", "name of the go package for the generated source file")
@@ -31,7 +32,6 @@ func init() {
 
 func main() {
 	validate(in, errors.New("must provide directory of input SQL file(s)"))
-	validate(out, errors.New("must provide directory of output source file"))
 	if pack == "" {
 		pack = os.Getenv(envar)
 		validate(pack, errors.New("must provide the name of the go package for the generated source file"))
@@ -50,16 +50,35 @@ func main() {
 		data[name] = strconv.Quote(s)
 	}
 
-	tmpl, err := template.New(name).Parse(contents)
+	ctx := &context{
+		Varname: name,
+		Package: pack,
+		Files:   data,
+	}
+
+	cntnts := contentsHead + contentsBodyStruct + "\n" + contentsBodyVar
+
+	if out != "./" {
+		ctx.Varname = strings.Title(name)
+		cntnts = contentsHead + contentsBodyVar
+
+		tmplCommon, err := template.New(name).Parse(
+				contentsHead + contentsBodyStruct)
+		handle(err)
+
+		fCommon, err := os.Create(filepath.Join(out, pack+".go"))
+		handle(err)
+
+		err = tmplCommon.Execute(fCommon, ctx)
+		handle(err)
+	}
+
+	tmpl, err := template.New(name).Parse(cntnts)
 	handle(err)
 
 	f, err := os.Create(filepath.Join(out, file))
 	handle(err)
 
-	ctx := &context{
-		Varname: name,
-		Package: pack,
-		Files:   data}
 	err = tmpl.Execute(f, ctx)
 	handle(err)
 }
@@ -83,9 +102,20 @@ type context struct {
 }
 
 const (
-	contents = `package {{.Package}}
+	contentsHead = `package {{.Package}}
 
-import (
+`
+
+	contentsBodyVar = `var {{.Varname}} = &GenPurse{
+	files: map[string]string{
+		{{range $key, $val := .Files}}
+			"{{$key}}": {{$val}},
+		{{end}}
+	},
+}
+`
+
+	contentsBodyStruct = `import (
 	"sync"
 )
 
@@ -101,14 +131,6 @@ func (p *GenPurse) Get(filename string) (v string, ok bool) {
 	v, ok = p.files[filename]
 	p.mu.RUnlock()
 	return
-}
-
-var {{.Varname}} = &GenPurse{
-	files: map[string]string{
-		{{range $key, $val := .Files}}
-			"{{$key}}": {{$val}},
-		{{end}}
-	},
 }
 `
 )
