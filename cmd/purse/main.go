@@ -32,11 +32,9 @@ func init() {
 func main() {
 	validate(in, errors.New("must provide directory of input SQL file(s)"))
 	validate(out, errors.New("must provide directory of output source file"))
-	pack = os.Getenv(envar)
 	if pack == "" {
+		pack = os.Getenv(envar)
 		validate(pack, errors.New("must provide the name of the go package for the generated source file"))
-	} else {
-		os.Setenv(envar, pack)
 	}
 
 	mp, err := purse.New(in)
@@ -60,7 +58,7 @@ func main() {
 
 	ctx := &context{
 		Varname: name,
-		Package: os.Getenv("GOPACKAGE"),
+		Package: pack,
 		Files:   data}
 	err = tmpl.Execute(f, ctx)
 	handle(err)
