@@ -7,6 +7,7 @@ import (
 	"os"
 	"path/filepath"
 	"strconv"
+	"strings"
 	"text/template"
 
 	"github.com/smotes/purse"
@@ -22,7 +23,7 @@ var (
 
 func init() {
 	flag.StringVar(&in, "in", "", "directory of the input SQL file(s)")
-	flag.StringVar(&out, "out", "", "directory of the output source file")
+	flag.StringVar(&out, "out", "./", "directory of the output source file")
 	flag.StringVar(&file, "file", "out.go", "name of the output source file")
 	flag.StringVar(&name, "name", "gen", "variable name of the generated Purse struct")
 	flag.StringVar(&pack, "pack", "", "name of the go package for the generated source file")
@@ -31,12 +32,9 @@ func init() {
 
 func main() {
 	validate(in, errors.New("must provide directory of input SQL file(s)"))
-	validate(out, errors.New("must provide directory of output source file"))
-	pack = os.Getenv(envar)
 	if pack == "" {
+		pack = os.Getenv(envar)
 		validate(pack, errors.New("must provide the name of the go package for the generated source file"))
-	} else {
-		os.Setenv(envar, pack)
 	}
 
 	mp, err := purse.New(in)
@@ -52,16 +50,35 @@ func main() {
 		data[name] = strconv.Quote(s)
 	}
 
-	tmpl, err := template.New(name).Parse(contents)
+	ctx := &context{
+		Varname: name,
+		Package: pack,
+		Files:   data,
+	}
+
+	cntnts := contentsHead + contentsBodyStruct + "\n" + contentsBodyVar
+
+	if out != "./" {
+		ctx.Varname = strings.Title(name)
+		cntnts = contentsHead + contentsBodyVar
+
+		tmplCommon, err := template.New(name).Parse(
+				contentsHead + contentsBodyStruct)
+		handle(err)
+
+		fCommon, err := os.Create(filepath.Join(out, pack+".go"))
+		handle(err)
+
+		err = tmplCommon.Execute(fCommon, ctx)
+		handle(err)
+	}
+
+	tmpl, err := template.New(name).Parse(cntnts)
 	handle(err)
 
 	f, err := os.Create(filepath.Join(out, file))
 	handle(err)
 
-	ctx := &context{
-		Varname: name,
-		Package: os.Getenv("GOPACKAGE"),
-		Files:   data}
 	err = tmpl.Execute(f, ctx)
 	handle(err)
 }
@@ -85,32 +102,38 @@ type context struct {
 }
 
 const (
-	contents = `package {{.Package}}
+	contentsHead = `package {{.Package}}
 
-import (
-	"sync"
-)
+`
 
-// GenPurse is an literal implementation of a Purse that is programmatically generated
-// from SQL file contents within a directory via go generate.
-type GenPurse struct {
-	mu sync.RWMutex
-	files map[string]string
-}
-
-func (p *GenPurse) Get(filename string) (v string, ok bool) {
-	p.mu.RLock()
-	v, ok = p.files[filename]
-	p.mu.RUnlock()
-	return
-}
-
-var {{.Varname}} = &GenPurse{
+	contentsBodyVar = `// {{.Varname}} is a *GenPurse.
+	var {{.Varname}} = &GenPurse{
 	files: map[string]string{
 		{{range $key, $val := .Files}}
 			"{{$key}}": {{$val}},
 		{{end}}
 	},
+}
+`
+
+	contentsBodyStruct = `import (
+	"sync"
+)
+
+// GenPurse is a literal implementation of a Purse that is programmatically
+// generated from SQL file contents within a directory via go generate.
+type GenPurse struct {
+	mu sync.RWMutex
+	files map[string]string
+}
+
+// Get takes a filename and returns a query if it is found within the relevant
+// map.  If filename is not found, ok will return false.
+func (p *GenPurse) Get(filename string) (v string, ok bool) {
+	p.mu.RLock()
+	v, ok = p.files[filename]
+	p.mu.RUnlock()
+	return
 }
 `
 )
