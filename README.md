@@ -71,6 +71,10 @@ directory of SQL files. Given the directory of SQL files and the directory of th
 instantiation (bound to variable gen by default) of a Purse interface driven by a `map[string]string`
 literal representing the SQL directory's files' contents.
 
+If the output directory is set to be outside of the CWD (anything besides 
+"./"), the generated files will be split to acommodate cases when the purse 
+command is called multiple times within the same project.
+
 **Note**: The purse package is meant to be used during development where SQL files are changing often
 and need to be reloaded into memory on each program execution. *Contrastingly*, the `purse` tool
 is meant to be used in production environments where the SQL files' contents can be embedded
