@@ -72,7 +72,7 @@ instantiation (bound to variable gen by default) of a Purse interface driven by 
 literal representing the SQL directory's files' contents.
 
 If the output directory is set to be outside of the CWD (anything besides 
-"./"), the generated files will be split to acommodate cases when the purse 
+"./"), the generated files will be split to accommodate cases when the purse 
 command is called multiple times within the same project.
 
 **Note**: The purse package is meant to be used during development where SQL files are changing often
