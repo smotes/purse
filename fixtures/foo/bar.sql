@@ -1,0 +1,1 @@
+SELECT foo FROM bar WHERE foobar=1
