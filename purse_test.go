@@ -13,6 +13,7 @@ var (
 		"insert.sql":        "INSERT INTO post (slug, title, created, markdown, html)\nVALUES (?, ?, ?, ?, ?)",
 		"query_all.sql":     "SELECT\nid,\nslug,\ntitle,\ncreated,\nmarkdown,\nhtml\nFROM post",
 		"query_by_slug.sql": "SELECT\nid,\nslug,\ntitle,\ncreated,\nmarkdown,\nhtml\nFROM post\nWHERE slug = ?",
+		"foo/bar.sql":       "SELECT foo FROM bar WHERE foobar=1",
 	}
 )
 
