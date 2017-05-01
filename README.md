@@ -1,4 +1,4 @@
-# purse [![Build Status](https://drone.io/github.com/smotes/purse/status.png)](https://drone.io/github.com/smotes/purse/latest) [![GoDoc](https://godoc.org/github.com/smotes/purse?status.svg)](https://godoc.org/github.com/smotes/purse)
+# purse [![GoDoc](https://godoc.org/github.com/smotes/purse?status.svg)](https://godoc.org/github.com/smotes/purse) [![Build Status](https://travis-ci.org/smotes/purse.svg?branch=master)](https://travis-ci.org/smotes/purse) [![codecov](https://codecov.io/gh/smotes/purse/branch/master/graph/badge.svg)](https://codecov.io/gh/smotes/purse)
 
 purse is a persistence-layer Go package for loading and embedding SQL file contents into Go programs.
 
