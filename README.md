@@ -2,6 +2,8 @@
 
 purse is a persistence-layer Go package for loading and embedding SQL file contents into Go programs.
 
+Requires Go v1.6+
+
 **Disclaimer**: *purse is not a query builder or ORM package, but rather a package and tool used to load and embed SQL files*.
 
 ### Rationale
@@ -17,7 +19,7 @@ The solution is simple: **keep your SQL inside of SQL files**.
 First, simply get the package with `go get`:
 
 ```bash
-$ go get github.com/smotes/purse
+$ go get -u github.com/smotes/purse
 ```
 
 You can then import it into your Go source file(s):
@@ -83,8 +85,7 @@ directly into the compiled binary, easing deployment.
 To install the tool, use go install:
 
 ```bash
-$ go get github.com/smotes/purse/cmd/purse
-$ go install github.com/smotes/purse/cmd/purse
+$ go get -u github.com/smotes/purse/cmd/purse
 ```
 
 The command syntax is 
